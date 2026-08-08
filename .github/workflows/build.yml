@@ -4,15 +4,24 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: kivy/buildozer
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Environment
+        run: |
+          sudo apt update
+          sudo apt install -y git autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev python3-pip python3-venv
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install buildozer
+
       - name: Build APK
         run: |
-          # SDK और अन्य चीजों को अपने आप कॉन्फ़िगर करने के लिए
+          source venv/bin/activate
+          # यह लाइन एरर को फिक्स करेगी
+          export BUILDOZER_ALLOW_ROOT=1
           buildozer android debug
 
       - name: Upload APK
