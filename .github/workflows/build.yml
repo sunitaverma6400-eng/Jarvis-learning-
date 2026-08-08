@@ -8,19 +8,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Setup Environment
         run: |
           sudo apt update
-          sudo apt install -y python3-pip python3-venv git
-          sudo apt install -y autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
-          pip3 install --user --upgrade buildozer
-          # Buildozer का पाथ कन्फर्म करना
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          sudo apt install -y git autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev python3-pip python3-venv
+          
+          # Virtual Environment बनाना (सबसे ज़रूरी स्टेप)
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install buildozer
+          
+          # Buildozer को पाथ में जोड़ना
+          echo "$PWD/venv/bin" >> $GITHUB_PATH
 
       - name: Build APK
         run: |
-          # यह पक्का करेगा कि buildozer कमांड एक्सेसिबल है
-          ~/.local/bin/buildozer android debug
+          source venv/bin/activate
+          buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
