@@ -5,17 +5,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        with:
-          command: buildozer android debug
-        env:
-          BUILDOZER_ALLOW_ROOT: 1
+      - name: Install System Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y git zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev python3-pip
 
-      - name: Upload APK
+      - name: Install Buildozer
+        run: |
+          pip install --break-system-packages --user buildozer
+
+      - name: Build APK
+        run: |
+          export PATH=$PATH:~/.local/bin
+          # Root के लिए परमिशन अलाउ करें
+          export BUILDOZER_ALLOW_ROOT=1
+          # बिल्ड शुरू करें
+          buildozer android debug
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: MediaFinderAPK
