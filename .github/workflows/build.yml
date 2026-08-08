@@ -4,27 +4,15 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: kivy/buildozer
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Environment
-        run: |
-          sudo apt update
-          sudo apt install -y git autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev python3-pip python3-venv
-          
-          # Virtual Environment बनाना (सबसे ज़रूरी स्टेप)
-          python3 -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
-          pip install buildozer
-          
-          # Buildozer को पाथ में जोड़ना
-          echo "$PWD/venv/bin" >> $GITHUB_PATH
-
       - name: Build APK
         run: |
-          source venv/bin/activate
+          # SDK और अन्य चीजों को अपने आप कॉन्फ़िगर करने के लिए
           buildozer android debug
 
       - name: Upload APK
