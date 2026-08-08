@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build APK
 on: [push]
 
 jobs:
@@ -7,15 +7,15 @@ jobs:
     container:
       image: kivy/buildozer:latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Build APK
+        env:
+          # यह वेरिएबल Docker कंटेनर के अंदर चेक_रूट को बायपास करेगा
+          BUILDOZER_ALLOW_ROOT: 1
         run: |
-          # Buildozer को root एक्सेस दें
-          export BUILDOZER_ALLOW_ROOT=1
-          # dependencies को जबरदस्ती अपडेट करें
-          buildozer --verbose android debug
+          # 'yes' कमांड इनपुट के लिए 'y' ऑटोमैटिकली भेजता रहेगा
+          yes | buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
