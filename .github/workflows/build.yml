@@ -4,27 +4,20 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: kivy/buildozer:latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install System Dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y git zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev python3-pip
-
-      - name: Install Buildozer
-        run: |
-          pip install --break-system-packages --user buildozer
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Build APK
         run: |
-          export PATH=$PATH:~/.local/bin
-          # Root के लिए परमिशन अलाउ करें
+          # Buildozer को root एक्सेस दें
           export BUILDOZER_ALLOW_ROOT=1
-          # बिल्ड शुरू करें
-          buildozer android debug
+          # dependencies को जबरदस्ती अपडेट करें
+          buildozer --verbose android debug
 
-      - name: Upload Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: MediaFinderAPK
